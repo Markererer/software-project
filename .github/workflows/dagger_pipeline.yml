@@ -23,7 +23,7 @@ jobs:
 
       - name: Cleanup cache paths
         run: |
-          rm -rf ~/go/pkg/mod ~/.cache/go-build
+          go clean -modcache
 
       - name: Restore Go cache
         uses: actions/cache@v3
