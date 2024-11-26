@@ -15,11 +15,11 @@ jobs:
     steps:
       # Step 1: Check out the repository
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.1.0
 
       # Step 2: Install Go
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v4.1.0
         with:
           go-version: 1.21
 
@@ -27,3 +27,28 @@ jobs:
       - name: Run dummy command
         run: |
           echo "This is a placeholder for the Dagger pipeline"
+
+      # Step 3: Restore Go dependencies cache
+      - name: Restore Go cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      # Step 4: Install dependencies
+      - name: Install dependencies
+        run: go mod tidy
+
+      # Step 5: Install Dagger CLI
+      - name: Install Dagger CLI
+        run: |
+          curl -L https://dl.dagger.io/dagger/install.sh | DAGGER_VERSION=0.8.0 sh
+          echo "export PATH=\$PATH:/home/runner/.dagger/bin" >> $GITHUB_ENV
+
+      # Step 6: Run Dagger pipeline
+      - name: Run Dagger pipeline
+        run: go run main.go
