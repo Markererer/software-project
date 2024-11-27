@@ -28,6 +28,13 @@ jobs:
       - name: Install dependencies
         run: go mod tidy
 
+      - name: Install Docker
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker.io
+          sudo systemctl start docker
+          sudo systemctl enable docker
+
       - name: Install Dagger CLI
         run: |
           curl -L https://dl.dagger.io/dagger/install.sh | DAGGER_VERSION=0.8.0 sh
