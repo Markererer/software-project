@@ -1,34 +1,8 @@
 from pathlib import Path
-
-import typer
 from loguru import logger
 from tqdm import tqdm
 
-from config import MODELS_DIR, PROCESSED_DATA_DIR
-
-app = typer.Typer()
-
-
-@app.command()
-def main(
-    # ---- REPLACE DEFAULT PATHS AS APPROPRIATE ----
-    features_path: Path = PROCESSED_DATA_DIR / "features.csv",
-    labels_path: Path = PROCESSED_DATA_DIR / "labels.csv",
-    model_path: Path = MODELS_DIR / "model.pkl"
-    # -----------------------------------------
-):
-    # ---- REPLACE THIS WITH YOUR OWN CODE ----
-    logger.info("Training some model...")
-    for i in tqdm(range(10), total=10):
-        if i == 5:
-            logger.info("Something happened for iteration 5.")
-    logger.success("Modeling training complete.")
-    # -----------------------------------------
-
-
-if __name__ == "__main__":
-    app()
-
+from config import MODELS_DIR, PROCESSED_DATA_DIR, ARTIFACT_DIR
 
 
 # Ignoring this code for now, assembling the main.ipynb ML environment setup and training code here
@@ -73,6 +47,22 @@ params = {
 
 model_grid = RandomizedSearchCV(model, param_distributions=params, n_jobs=-1, verbose=3, n_iter=10, cv=10)
 
+# how de we get X_train and y_train?
+
+X_train_path = ARTIFACT_DIR / "X_train.csv"
+y_train_path = ARTIFACT_DIR / "y_train.csv"
+X_test_path = ARTIFACT_DIR / "X_test.csv"
+y_test_path = ARTIFACT_DIR / "y_test.csv"
+
+#read the data
+X_train = pd.read_csv(X_train_path)
+y_train = pd.read_csv(y_train_path)
+X_test = pd.read_csv(X_test_path)
+y_test = pd.read_csv(y_test_path)
+
+
+
+
 model_grid.fit(X_train, y_train)
 
 
@@ -88,7 +78,7 @@ y_pred_test = model_grid.predict(X_test)
 
 
 xgboost_model = model_grid.best_estimator_
-xgboost_model_path = "./artifacts/lead_model_xgboost.json"
+xgboost_model_path = MODELS_DIR / "lead_model_xgboost.json"
 xgboost_model.save_model(xgboost_model_path)
 
 model_results = {
@@ -105,12 +95,17 @@ class lr_wrapper(mlflow.pyfunc.PythonModel):
         return self.model.predict_proba(model_input)[:, 1]
 
 
+current_date = datetime.datetime.now().strftime("%Y_%B_%d")
+experiment_name = current_date
+mlflow.set_experiment(experiment_name)
+
+
 mlflow.sklearn.autolog(log_input_examples=True, log_models=False)
 experiment_id = mlflow.get_experiment_by_name(experiment_name).experiment_id
 
 with mlflow.start_run(experiment_id=experiment_id) as run:
     model = LogisticRegression()
-    lr_model_path = "./artifacts/lead_model_lr.pkl"
+    lr_model_path = ARTIFACT_DIR / "lead_model_lr.pkl"
 
     params = {
               'solver': ["newton-cg", "lbfgs", "liblinear", "sag", "saga"],
@@ -146,13 +141,13 @@ model_results[lr_model_path] = model_classification_report
 
 
 
-column_list_path = './artifacts/columns_list.json'
+column_list_path = ARTIFACT_DIR / 'columns_list.json'
 with open(column_list_path, 'w+') as columns_file:
     columns = {'column_names': list(X_train.columns)}
     json.dump(columns, columns_file)
 
 
 
-model_results_path = "./artifacts/model_results.json"
+model_results_path = ARTIFACT_DIR / "model_results.json"
 with open(model_results_path, 'w+') as results_file:
     json.dump(model_results, results_file)

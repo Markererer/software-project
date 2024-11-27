@@ -13,9 +13,6 @@ from config import PROCESSED_DATA_DIR, RAW_DATA_DIR
 # shutil.rmtree("./artifacts",ignore_errors=True)
 os.makedirs("artifacts",exist_ok=True)
 
-# testing
-max_date = "2024-01-31"
-min_date = "2024-01-01"
 
 
 warnings.filterwarnings('ignore')
@@ -49,6 +46,11 @@ def main():
 
     # Read the data
     data = pd.read_csv(RAW_DATA_DIR / "raw_data.csv")
+
+    
+    # testing
+    max_date = "2024-01-31"
+    min_date = "2024-01-01"
 
     if not max_date:
         max_date = pd.to_datetime(datetime.datetime.now().date()).date()

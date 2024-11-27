@@ -10,21 +10,17 @@ import typer
 from loguru import logger
 from tqdm import tqdm
 
-from config import PROCESSED_DATA_DIR
+from config import PROCESSED_DATA_DIR, RAW_DATA_DIR, ARTIFACT_DIR
 
 # Constants used:
-current_date = datetime.datetime.now().strftime("%Y_%B_%d")
-data_gold_path = "./artifacts/train_data_gold.csv"
-data_version = "00000"
-experiment_name = current_date
 
+data_gold_path = PROCESSED_DATA_DIR / "train_data_gold.csv"
 
-os.makedirs("artifacts", exist_ok=True)
+os.makedirs(ARTIFACT_DIR, exist_ok=True)
 os.makedirs("mlruns", exist_ok=True)
 os.makedirs("mlruns/.trash", exist_ok=True)
 
 
-mlflow.set_experiment(experiment_name)
 
 def create_dummy_cols(df, col):
     df_dummies = pd.get_dummies(df[col], prefix=col, drop_first=True)
@@ -61,3 +57,11 @@ X = data.drop(["lead_indicator"], axis=1)
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, random_state=42, test_size=0.15, stratify=y
 )
+
+# save X_train and y_train and X_test and y_test into a readable file
+X_train.to_csv(ARTIFACT_DIR / "X_train.csv", index=False)
+X_test.to_csv(ARTIFACT_DIR / "X_test.csv", index=False)
+y_train.to_csv(ARTIFACT_DIR / "y_train.csv", index=False)
+y_test.to_csv(ARTIFACT_DIR / "y_test.csv", index=False)
+
+logger.info("Data split and saved successfully")
