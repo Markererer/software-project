@@ -4,7 +4,7 @@ import typer
 from loguru import logger
 from tqdm import tqdm
 
-from sdw_project.config import MODELS_DIR, PROCESSED_DATA_DIR
+from config import MODELS_DIR, PROCESSED_DATA_DIR
 
 app = typer.Typer()
 
@@ -14,7 +14,7 @@ def main(
     # ---- REPLACE DEFAULT PATHS AS APPROPRIATE ----
     features_path: Path = PROCESSED_DATA_DIR / "features.csv",
     labels_path: Path = PROCESSED_DATA_DIR / "labels.csv",
-    model_path: Path = MODELS_DIR / "model.pkl",
+    model_path: Path = MODELS_DIR / "model.pkl"
     # -----------------------------------------
 ):
     # ---- REPLACE THIS WITH YOUR OWN CODE ----
