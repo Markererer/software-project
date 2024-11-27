@@ -16,9 +16,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-    - name: Cleanup Go environment
-      run: |
-        sudo rm -rf /usr/local/go /usr/local/go/* ~/go ~/go/pkg/mod ~/.cache/go-build
+      - name: Cleanup Go environment
+        run: |
+          sudo rm -rf /usr/local/go /usr/local/go/* ~/go ~/go/pkg/mod ~/.cache/go-build
 
       #- name: Restore Go cache
       #  uses: actions/cache@v3
