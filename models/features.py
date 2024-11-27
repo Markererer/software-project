@@ -59,9 +59,9 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 # save X_train and y_train and X_test and y_test into a readable file
-X_train.to_csv(ARTIFACT_DIR / "X_train.csv", index=False)
-X_test.to_csv(ARTIFACT_DIR / "X_test.csv", index=False)
-y_train.to_csv(ARTIFACT_DIR / "y_train.csv", index=False)
-y_test.to_csv(ARTIFACT_DIR / "y_test.csv", index=False)
+X_train.to_parquet(ARTIFACT_DIR / "X_train.parquet", index=False)
+X_test.to_parquet(ARTIFACT_DIR / "X_test.parquet", index=False)
+y_train.to_frame().to_parquet(ARTIFACT_DIR / "y_train.parquet", index=False)
+y_test.to_frame().to_parquet(ARTIFACT_DIR / "y_test.parquet", index=False)
 
 logger.info("Data split and saved successfully")

@@ -55,13 +55,14 @@ X_test_path = ARTIFACT_DIR / "X_test.csv"
 y_test_path = ARTIFACT_DIR / "y_test.csv"
 
 #read the data
-X_train = pd.read_csv(X_train_path)
-y_train = pd.read_csv(y_train_path)
-X_test = pd.read_csv(X_test_path)
-y_test = pd.read_csv(y_test_path)
+X_train = pd.read_parquet(ARTIFACT_DIR / "X_train.parquet")
+X_test = pd.read_parquet(ARTIFACT_DIR / "X_test.parquet")
+y_train = pd.read_parquet(ARTIFACT_DIR / "y_train.parquet")
+y_test = pd.read_parquet(ARTIFACT_DIR / "y_test.parquet")
 
 
-
+# TODO change approach
+# we get issues by using the parquet bs. Maybe passing the variables directly would solve these errors? They appear not in the ipynb file, so should be an easy fix if we just pass them as vars directly from the memory, without saving these into parquets.
 
 model_grid.fit(X_train, y_train)
 
@@ -137,7 +138,7 @@ model_classification_report = classification_report(y_test, y_pred_test, output_
 
 best_model_lr_params = model_grid.best_params_
 
-model_results[lr_model_path] = model_classification_report
+model_results[str(lr_model_path)] = model_classification_report
 
 
 
@@ -150,4 +151,5 @@ with open(column_list_path, 'w+') as columns_file:
 
 model_results_path = ARTIFACT_DIR / "model_results.json"
 with open(model_results_path, 'w+') as results_file:
+    print(model_results, model_results[lr_model_path])
     json.dump(model_results, results_file)
