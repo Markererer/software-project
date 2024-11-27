@@ -1,0 +1,15 @@
+artifact_uri: file:///d:/Projects/SoftwareDev2024/itu-sdse-project-main/notebooks/mlruns/513283018559583915/28e9dba84785460aadab5e5f6f1e4a3d/artifacts
+end_time: 1732701289101
+entry_point_name: ''
+experiment_id: '513283018559583915'
+lifecycle_stage: active
+run_id: 28e9dba84785460aadab5e5f6f1e4a3d
+run_name: fortunate-squid-560
+run_uuid: 28e9dba84785460aadab5e5f6f1e4a3d
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1732701278865
+status: 3
+tags: []
+user_id: skrbj
