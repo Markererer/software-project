@@ -12,9 +12,6 @@ from config import PROCESSED_DATA_DIR, RAW_DATA_DIR
 
 # shutil.rmtree("./artifacts",ignore_errors=True)
 os.makedirs("artifacts",exist_ok=True)
-print("Created artifacts directory")
-
-    
 
 # testing
 max_date = "2024-01-31"
@@ -51,8 +48,6 @@ def impute_missing_values(x, method="mean"):
 def main():
 
     # Read the data
-    print("Loading training data")
-
     data = pd.read_csv(RAW_DATA_DIR / "raw_data.csv")
 
     if not max_date:
