@@ -4,7 +4,7 @@ import typer
 from loguru import logger
 from tqdm import tqdm
 
-from sdw_project.config import MODELS_DIR, PROCESSED_DATA_DIR
+from config import MODELS_DIR, PROCESSED_DATA_DIR
 
 app = typer.Typer()
 
