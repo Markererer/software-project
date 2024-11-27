@@ -28,6 +28,11 @@ jobs:
       - name: Install dependencies
         run: go mod tidy
 
+      - name: Remove conflicting packages
+        run: |
+          sudo apt-get remove -y containerd
+          sudo apt-get remove -y containerd.io
+
       - name: Install Docker
         run: |
           sudo apt-get update
