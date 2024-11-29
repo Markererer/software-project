@@ -1,7 +1,7 @@
 # sdw_project
 
 <a target="_blank" href="https://cookiecutter-data-science.drivendata.org/">
-    <img src="https://img.shields.io/badge/CCDS-Project%20template-328F97?logo=cookiecutter" />
+    <img src="https://i.ytimg.com/vi/tEOTC7IDAew/maxresdefault.jpg" />
 </a>
 
 this is the repository of 2025 Software Development course project.
