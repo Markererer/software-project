@@ -1,15 +1,15 @@
-name: Dagger Pipeline
+name: GitHub Workflow for Dagger
 
 on:
   push:
     branches:
-      - main
+      - "**"
   pull_request:
     branches:
-      - main
+      - "**"
 
 jobs:
-  dagger-workflow:
+  github-workflow:
     runs-on: ubuntu-latest
 
     steps:
@@ -27,6 +27,18 @@ jobs:
 
       - name: Install dependencies
         run: go mod tidy
+
+      - name: Remove conflicting packages
+        run: |
+          sudo apt-get remove -y containerd
+          sudo apt-get remove -y containerd.io
+
+      - name: Install Docker
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker.io
+          sudo systemctl start docker
+          sudo systemctl enable docker
 
       - name: Install Dagger CLI
         run: |
