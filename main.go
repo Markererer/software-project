@@ -8,13 +8,18 @@ import (
 )
 
 const (
+	rawDataDir       = "./data/raw"       // Local path to raw data
+	artifactsDir     = "./data/artifacts" // Local path to save artifacts
+	internimDir      = "./data/internim"  // Local path to save internim data
+	processedDataDir = "./data/processed" // Local path to save processed data
+
 	// Preprocessing
-	rawDataDir       = "./data/raw"                 // Local path to raw data
-	artifactsDir     = "./data/artifacts"           // Local path to save artifacts
-	processedDataDir = "./data/processed"           // Local path to save processed data
-	scriptPath       = "./scripts/preprocessing.py" // Path to the Python script
-	minDate          = "2024-01-01"                 // Example date range
-	maxDate          = "2024-01-31"
+	preprocessingScriptPath = "./scripts/preprocessing.py" // Path to the data preprocessing script
+	minDate                 = "2024-01-01"                 // Date range
+	maxDate                 = "2024-01-31"
+
+	// Features
+	featuresScriptPath = "./scripts/features.py" // Path to the features extraction script
 )
 
 func main() {
@@ -33,10 +38,10 @@ func main() {
 		WithWorkdir("/app").
 		WithExec([]string{"pip", "install", "-r", "requirements.txt"})
 
-	// Run the Python script with arguments
+	// Run the preprocessing Python script with arguments
 	output, err := pythonContainer.
 		WithExec([]string{
-			"python", scriptPath,
+			"python", preprocessingScriptPath,
 			"--raw_data_dir", rawDataDir,
 			"--artifacts_dir", artifactsDir,
 			"--processed_data_dir", processedDataDir,
@@ -46,6 +51,19 @@ func main() {
 		Stdout(ctx)
 	if err != nil {
 		log.Fatalf("Failed to run preprocessing script: %v", err)
+	}
+
+	// Run the feature extraction Python script with arguments
+	output, err = pythonContainer.
+		WithExec([]string{
+			"python", featuresScriptPath,
+			"--raw_data_dir", rawDataDir,
+			"--internim_data_dir", internimDir,
+			"--processed_data_dir", processedDataDir,
+		}).
+		Stdout(ctx)
+	if err != nil {
+		log.Fatalf("Failed to run feature extraction script: %v", err)
 	}
 
 	// Print pipeline output
