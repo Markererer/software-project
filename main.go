@@ -38,7 +38,6 @@ func main() {
 		WithWorkdir("/app").
 		WithExec([]string{"pip", "install", "-r", "requirements.txt"})
 
-	// Run the preprocessing Python script with arguments
 	output, err := pythonContainer.
 		WithExec([]string{
 			"python", preprocessingScriptPath,
@@ -48,13 +47,6 @@ func main() {
 			"--min_date", minDate,
 			"--max_date", maxDate,
 		}).
-		Stdout(ctx)
-	if err != nil {
-		log.Fatalf("Failed to run preprocessing script: %v", err)
-	}
-
-	// Run the feature extraction Python script with arguments
-	output, err = pythonContainer.
 		WithExec([]string{
 			"python", featuresScriptPath,
 			"--raw_data_dir", rawDataDir,
@@ -63,7 +55,7 @@ func main() {
 		}).
 		Stdout(ctx)
 	if err != nil {
-		log.Fatalf("Failed to run feature extraction script: %v", err)
+		log.Fatalf("Failed to run scripts: %v", err)
 	}
 
 	// Print pipeline output
