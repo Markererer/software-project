@@ -32,11 +32,11 @@ from config import MODELS_DIR, PROCESSED_DATA_DIR, ARTIFACT_DIR
 
 # Constants used:
 
-data_gold_path = PROCESSED_DATA_DIR / "train_data_gold.csv"
+data_gold_path = "itu-sdse-project-main/data/processed/train_data_gold.csv"
 
-os.makedirs(ARTIFACT_DIR, exist_ok=True)
-os.makedirs("mlruns", exist_ok=True)
-os.makedirs("mlruns/.trash", exist_ok=True)
+os.makedirs("itu-sdse-project-main/data/artifacts", exist_ok=True)
+os.makedirs("itu-sdse-project-main/mlruns", exist_ok=True)
+os.makedirs("itu-sdse-project-main/mlruns/.trash", exist_ok=True)
 
 
 
@@ -106,7 +106,7 @@ y_pred_test = model_grid.predict(X_test)
 
 
 xgboost_model = model_grid.best_estimator_
-xgboost_model_path = MODELS_DIR / "lead_model_xgboost.json"
+xgboost_model_path = "itu-sdse-project-main/models/lead_model_xgboost.json"
 xgboost_model.save_model(xgboost_model_path)
 
 model_results = {
@@ -133,7 +133,7 @@ experiment_id = mlflow.get_experiment_by_name(experiment_name).experiment_id
 
 with mlflow.start_run(experiment_id=experiment_id) as run:
     model = LogisticRegression()
-    lr_model_path = ARTIFACT_DIR / "lead_model_lr.pkl"
+    lr_model_path = "itu-sdse-project-main/models/lead_model_lr.pkl"
 
     params = {
               'solver': ["newton-cg", "lbfgs", "liblinear", "sag", "saga"],
@@ -169,14 +169,14 @@ model_results[lr_model_path] = model_classification_report
 
 
 
-column_list_path = './artifacts/columns_list.json'
+column_list_path = 'itu-sdse-project-main/data/artifacts/columns_list.json'
 with open(column_list_path, 'w+') as columns_file:
     columns = {'column_names': list(X_train.columns)}
     json.dump(columns, columns_file)
 
 
 
-model_results_path = "./artifacts/model_results.json"
+model_results_path = "itu-sdse-project-main/data/artifacts/model_results.json"
 with open(model_results_path, 'w+') as results_file:
     
     json.dump(model_results, results_file)

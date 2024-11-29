@@ -1,0 +1,15 @@
+artifact_uri: file:///d:/Projects/SoftwareDev2024/itu-sdse-project-main/old_repo_files/mlruns/652092675736359638/0cd95f86c3e3475298b535bf0f161697/artifacts
+end_time: 1732888073835
+entry_point_name: ''
+experiment_id: '652092675736359638'
+lifecycle_stage: active
+run_id: 0cd95f86c3e3475298b535bf0f161697
+run_name: stately-mouse-486
+run_uuid: 0cd95f86c3e3475298b535bf0f161697
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1732888072616
+status: 3
+tags: []
+user_id: skrbj

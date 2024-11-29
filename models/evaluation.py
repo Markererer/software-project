@@ -1,3 +1,14 @@
+import time
+from mlflow.tracking.client import MlflowClient
+from mlflow.entities.model_registry.model_version_status import ModelVersionStatus
+from mlflow.tracking.client import MlflowClient
+import datetime
+import mlflow
+import pandas as pd
+
+
+
+
 # Constants used:
 current_date = datetime.datetime.now().strftime("%Y_%B_%d")
 artifact_path = "model"
@@ -5,10 +16,7 @@ model_name = "lead_model"
 experiment_name = current_date
 
 #helper functions
-import time
-from mlflow.tracking.client import MlflowClient
-from mlflow.entities.model_registry.model_version_status import ModelVersionStatus
-from mlflow.tracking.client import MlflowClient
+
 
 def wait_until_ready(model_name, model_version):
     client = MlflowClient()
@@ -35,7 +43,7 @@ experiment_best = mlflow.search_runs(
 
 import json
 
-with open("./artifacts/model_results.json", "r") as f:
+with open("itu-sdse-project-main/data/artifacts/model_results.json", "r") as f:
     model_results = json.load(f)
 results_df = pd.DataFrame({model: val["weighted avg"] for model, val in model_results.items()}).T
 
@@ -75,13 +83,13 @@ if prod_model_exists:
     model_status["prod"] = prod_model_score
 
     if train_model_score>prod_model_score:
-        print("Registering new model")
+#        print("Registering new model")
         run_id = experiment_best["run_id"]
 else:
-    print("No model in production")
+#    print("No model in production")
     run_id = experiment_best["run_id"]
 
-print(f"Registered model: {run_id}")
+# print(f"Registered model: {run_id}")
 
 # Register best model
 
@@ -95,6 +103,6 @@ if run_id is not None:
     model_details = mlflow.register_model(model_uri=model_uri, name=model_name)
     wait_until_ready(model_details.name, model_details.version)
     model_details = dict(model_details)
-    print(model_details)
+    
 
 
