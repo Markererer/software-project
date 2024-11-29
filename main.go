@@ -10,7 +10,7 @@ import (
 const (
 	rawDataDir       = "./data/raw"       // Local path to raw data
 	artifactsDir     = "./data/artifacts" // Local path to save artifacts
-	internimDir      = "./data/internim"  // Local path to save internim data
+	interimDir       = "./data/interim"   // Local path to save interim data
 	processedDataDir = "./data/processed" // Local path to save processed data
 
 	// Preprocessing
@@ -50,7 +50,7 @@ func main() {
 		WithExec([]string{
 			"python", featuresScriptPath,
 			"--raw_data_dir", rawDataDir,
-			"--internim_data_dir", internimDir,
+			"--interim_data_dir", interimDir,
 			"--processed_data_dir", processedDataDir,
 		}).
 		Stdout(ctx)

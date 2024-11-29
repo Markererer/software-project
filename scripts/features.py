@@ -40,17 +40,17 @@ def main(args):
     X = data.drop(["lead_indicator"], axis=1)
 
     # Save as a 🥒 file to pass between scripts
-    with open(args.internim_data_dir + "/X.pkl", "wb") as f:
+    with open(args.interim_data_dir + "/X.pkl", "wb") as f:
         pickle.dump(X, f)
-    with open(args.internim_data_dir + "/y.pkl", "wb") as f:
+    with open(args.interim_data_dir + "/y.pkl", "wb") as f:
         pickle.dump(y, f)
 
-    print("Training and test data saved into the internim directory.")
+    print("Training and test data saved into the interim directory.")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Data Preprocessing Script")
     parser.add_argument("--raw_data_dir", type=str, required=True, help="Path to the raw data directory")
-    parser.add_argument("--internim_data_dir", type=str, required=True, help="Path to save internim data")
+    parser.add_argument("--interim_data_dir", type=str, required=True, help="Path to save interim data")
     parser.add_argument("--processed_data_dir", type=str, required=True, help="Path to save processed data")
 
     args = parser.parse_args()
