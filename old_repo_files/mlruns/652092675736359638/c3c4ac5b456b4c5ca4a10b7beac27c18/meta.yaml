@@ -1,0 +1,15 @@
+artifact_uri: file:///d:/Projects/SoftwareDev2024/itu-sdse-project-main/old_repo_files/mlruns/652092675736359638/c3c4ac5b456b4c5ca4a10b7beac27c18/artifacts
+end_time: 1732891763217
+entry_point_name: ''
+experiment_id: '652092675736359638'
+lifecycle_stage: active
+run_id: c3c4ac5b456b4c5ca4a10b7beac27c18
+run_name: dashing-boar-905
+run_uuid: c3c4ac5b456b4c5ca4a10b7beac27c18
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1732891760810
+status: 3
+tags: []
+user_id: skrbj

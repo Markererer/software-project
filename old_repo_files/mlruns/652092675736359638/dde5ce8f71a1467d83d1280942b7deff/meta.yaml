@@ -1,0 +1,15 @@
+artifact_uri: file:///d:/Projects/SoftwareDev2024/itu-sdse-project-main/old_repo_files/mlruns/652092675736359638/dde5ce8f71a1467d83d1280942b7deff/artifacts
+end_time: 1732891680315
+entry_point_name: ''
+experiment_id: '652092675736359638'
+lifecycle_stage: active
+run_id: dde5ce8f71a1467d83d1280942b7deff
+run_name: big-squirrel-303
+run_uuid: dde5ce8f71a1467d83d1280942b7deff
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1732891679384
+status: 3
+tags: []
+user_id: skrbj

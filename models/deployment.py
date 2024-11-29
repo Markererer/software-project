@@ -1,10 +1,10 @@
 model_version = 1
 
 # Transition to staging
+from mlflow_client import get_mlflow_client
 
-from mlflow.tracking import MlflowClient
 
-client = MlflowClient()
+client = get_mlflow_client()
 model_name = "lead_model"
 
 def wait_for_deployment(model_name, model_version, stage='Staging'):

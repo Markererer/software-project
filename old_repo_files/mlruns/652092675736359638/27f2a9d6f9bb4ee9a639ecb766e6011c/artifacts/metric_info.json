@@ -1,0 +1,5 @@
+{
+  "accuracy_score-2_X_test": "accuracy_score(y_true=y_pred_test, y_pred=y_test)",
+  "accuracy_score_X_train": "accuracy_score(y_true=y_pred_train, y_pred=__)",
+  "f1_score_X_test": "f1_score(y_true=y_test, y_pred=y_pred_test)"
+}

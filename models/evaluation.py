@@ -1,13 +1,15 @@
 import time
 from mlflow.tracking.client import MlflowClient
 from mlflow.entities.model_registry.model_version_status import ModelVersionStatus
-from mlflow.tracking.client import MlflowClient
+
 import datetime
 import mlflow
 import pandas as pd
 
+from mlflow_client import get_mlflow_client
 
 
+client = get_mlflow_client()
 
 # Constants used:
 current_date = datetime.datetime.now().strftime("%Y_%B_%d")
@@ -19,7 +21,7 @@ experiment_name = current_date
 
 
 def wait_until_ready(model_name, model_version):
-    client = MlflowClient()
+    client = get_mlflow_client()
     for _ in range(10):
         model_version_details = client.get_model_version(
           name=model_name,
@@ -50,9 +52,7 @@ results_df = pd.DataFrame({model: val["weighted avg"] for model, val in model_re
 best_model = results_df.sort_values("f1-score", ascending=False).iloc[0].name
 print(f"Best model: {best_model}")
 
-from mlflow.tracking import MlflowClient
-
-client = MlflowClient()
+client = get_mlflow_client()
 prod_model = [model for model in client.search_model_versions(f"name='{model_name}'") if dict(model)['current_stage']=='Production']
 prod_model_exists = len(prod_model)>0
 
