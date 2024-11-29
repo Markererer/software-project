@@ -40,7 +40,7 @@ func main() {
 
 	output, err := pythonContainer.
 		WithExec([]string{
-			"python", preprocessingScriptPath,
+			"python", "-u", preprocessingScriptPath,
 			"--raw_data_dir", rawDataDir,
 			"--artifacts_dir", artifactsDir,
 			"--processed_data_dir", processedDataDir,
@@ -48,7 +48,7 @@ func main() {
 			"--max_date", maxDate,
 		}).
 		WithExec([]string{
-			"python", featuresScriptPath,
+			"python", "-u", featuresScriptPath,
 			"--raw_data_dir", rawDataDir,
 			"--interim_data_dir", interimDir,
 			"--processed_data_dir", processedDataDir,
