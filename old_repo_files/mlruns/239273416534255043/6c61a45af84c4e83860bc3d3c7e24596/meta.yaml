@@ -1,0 +1,15 @@
+artifact_uri: file:///d:/Projects/SoftwareDev2024/itu-sdse-project-main/old_repo_files/mlruns/239273416534255043/6c61a45af84c4e83860bc3d3c7e24596/artifacts
+end_time: 1732802392431
+entry_point_name: ''
+experiment_id: '239273416534255043'
+lifecycle_stage: active
+run_id: 6c61a45af84c4e83860bc3d3c7e24596
+run_name: chill-squirrel-168
+run_uuid: 6c61a45af84c4e83860bc3d3c7e24596
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1732802391271
+status: 3
+tags: []
+user_id: skrbj

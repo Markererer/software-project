@@ -1,36 +1,80 @@
 from pathlib import Path
+import os
+import datetime
+import json
+import shutil
+import joblib
+import pandas as pd
+import matplotlib.pyplot as plt
 from loguru import logger
 from tqdm import tqdm
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import cohen_kappa_score, f1_score, accuracy_score, confusion_matrix, classification_report
+from sklearn.model_selection import train_test_split, RandomizedSearchCV
+from scipy.stats import uniform, randint
+from xgboost import XGBRFClassifier
+import mlflow
+import mlflow.pyfunc
+import typer
 
 from config import MODELS_DIR, PROCESSED_DATA_DIR, ARTIFACT_DIR
 
 
-# Ignoring this code for now, assembling the main.ipynb ML environment setup and training code here
+# somehow the code got broken. Could 
 
 
-import mlflow.pyfunc
-from sklearn.linear_model import LogisticRegression
-import os
-from sklearn.metrics import cohen_kappa_score, f1_score
-import matplotlib.pyplot as plt
-import joblib
-import datetime
-
-import shutil
-import mlflow
-import pandas as pd
-
-from sklearn.model_selection import train_test_split
-from xgboost import XGBRFClassifier
-from sklearn.model_selection import RandomizedSearchCV
-from scipy.stats import uniform
-from scipy.stats import randint
-from sklearn.metrics import accuracy_score
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import classification_report
-import json
 
 
+
+
+
+
+
+# Constants used:
+
+data_gold_path = PROCESSED_DATA_DIR / "train_data_gold.csv"
+
+os.makedirs(ARTIFACT_DIR, exist_ok=True)
+os.makedirs("mlruns", exist_ok=True)
+os.makedirs("mlruns/.trash", exist_ok=True)
+
+
+
+def create_dummy_cols(df, col):
+    df_dummies = pd.get_dummies(df[col], prefix=col, drop_first=True)
+    new_df = pd.concat([df, df_dummies], axis=1)
+    new_df = new_df.drop(col, axis=1)
+    return new_df
+
+
+data = pd.read_csv(data_gold_path)
+
+data = data.drop(["lead_id", "customer_code", "date_part"], axis=1)
+
+cat_cols = ["customer_group", "onboarding", "bin_source", "source"]
+cat_vars = data[cat_cols]
+
+other_vars = data.drop(cat_cols, axis=1)
+
+
+
+for col in cat_vars:
+    cat_vars[col] = cat_vars[col].astype("category")
+    cat_vars = create_dummy_cols(cat_vars, col)
+
+data = pd.concat([other_vars, cat_vars], axis=1)
+
+for col in data:
+    data[col] = data[col].astype("float64")
+    
+
+y = data["lead_indicator"]
+X = data.drop(["lead_indicator"], axis=1)
+
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, random_state=42, test_size=0.15, stratify=y
+)
 
 
 # Model training
@@ -47,35 +91,18 @@ params = {
 
 model_grid = RandomizedSearchCV(model, param_distributions=params, n_jobs=-1, verbose=3, n_iter=10, cv=10)
 
-# how de we get X_train and y_train?
-
-X_train_path = ARTIFACT_DIR / "X_train.csv"
-y_train_path = ARTIFACT_DIR / "y_train.csv"
-X_test_path = ARTIFACT_DIR / "X_test.csv"
-y_test_path = ARTIFACT_DIR / "y_test.csv"
-
-#read the data
-X_train = pd.read_parquet(ARTIFACT_DIR / "X_train.parquet")
-X_test = pd.read_parquet(ARTIFACT_DIR / "X_test.parquet")
-y_train = pd.read_parquet(ARTIFACT_DIR / "y_train.parquet")
-y_test = pd.read_parquet(ARTIFACT_DIR / "y_test.parquet")
-
 
 # TODO change approach
+
 # we get issues by using the parquet bs. Maybe passing the variables directly would solve these errors? They appear not in the ipynb file, so should be an easy fix if we just pass them as vars directly from the memory, without saving these into parquets.
 
 model_grid.fit(X_train, y_train)
-
-
 
 best_model_xgboost_params = model_grid.best_params_
 
 
 y_pred_train = model_grid.predict(X_train)
 y_pred_test = model_grid.predict(X_test)
-
-
-
 
 
 xgboost_model = model_grid.best_estimator_
@@ -138,18 +165,18 @@ model_classification_report = classification_report(y_test, y_pred_test, output_
 
 best_model_lr_params = model_grid.best_params_
 
-model_results[str(lr_model_path)] = model_classification_report
+model_results[lr_model_path] = model_classification_report
 
 
 
-column_list_path = ARTIFACT_DIR / 'columns_list.json'
+column_list_path = './artifacts/columns_list.json'
 with open(column_list_path, 'w+') as columns_file:
     columns = {'column_names': list(X_train.columns)}
     json.dump(columns, columns_file)
 
 
 
-model_results_path = ARTIFACT_DIR / "model_results.json"
+model_results_path = "./artifacts/model_results.json"
 with open(model_results_path, 'w+') as results_file:
-    print(model_results, model_results[lr_model_path])
+    
     json.dump(model_results, results_file)
