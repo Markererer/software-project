@@ -49,7 +49,6 @@ def main(args):
     model_grid = RandomizedSearchCV(model, param_distributions=params, n_jobs=-1, verbose=3, n_iter=10, cv=10)
     model_grid.fit(X_train, y_train)
 
-    # TODO: Unused, discuss with Mark, decided to just print it for now
     best_model_xgboost_params = model_grid.best_params_
     print("The best-performing XGBoost model parameters were: " + str(best_model_xgboost_params))
 
@@ -80,7 +79,7 @@ def main(args):
 
     with mlflow.start_run(experiment_id=experiment_id) as run:
         model = LogisticRegression()
-        lr_model_path = (os.path.join(args.models_dir, "lead_model_lr.pkl"))
+        lr_model_path = (os.path.join(args.artifacts_dir, "lead_model_lr.pkl"))
 
         params = {
                 'solver': ["newton-cg", "lbfgs", "liblinear", "sag", "saga"],
@@ -90,7 +89,6 @@ def main(args):
         model_grid = RandomizedSearchCV(model, param_distributions= params, verbose=3, n_iter=10, cv=3)
         model_grid.fit(X_train, y_train)
 
-        # TODO: Unused, discuss with Mark
         best_model = model_grid.best_estimator_
 
         y_pred_train = model_grid.predict(X_train)
@@ -103,7 +101,10 @@ def main(args):
         
         # Store model for model interpretability
         joblib.dump(value=model, filename=lr_model_path)
-        # TODO: Shouldn't we dump the best model here?
+
+        # Dump the best performing model
+        lr_model_path = (os.path.join(args.models_dir, "lead_model_lr.json"))
+        best_model.save_model(lr_model_path)
             
         # Custom python model for predicting probability 
         mlflow.pyfunc.log_model('model', python_model=lr_wrapper(model))
@@ -111,7 +112,6 @@ def main(args):
 
     model_classification_report = classification_report(y_test, y_pred_test, output_dict=True)
 
-    # TODO: Unused, discuss with Mark, decided to just print it for now
     best_model_lr_params = model_grid.best_params_
     print("The best-performing Logistic Regression model parameters were: " + str(best_model_lr_params))
 

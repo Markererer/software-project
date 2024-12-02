@@ -20,6 +20,7 @@ const (
 	preprocessingScriptPath = "./scripts/preprocessing.py" // Path to the data preprocessing script
 	featuresScriptPath      = "./scripts/features.py"      // Path to the features extraction script
 	trainingScriptPath      = "./scripts/train.py"         // Path to the model training script
+	evaluationScriptPath    = "./scripts/evaluation.py"    // Path to the model evaluation script
 
 	// Script parameters
 	minDate = "2024-01-01" // Date range for the preprocessing script
@@ -87,6 +88,19 @@ func main() {
 
 	// Get the output from the feature extraction script
 	output, err = modelsContainer.Stdout(ctx)
+	if err != nil {
+		log.Fatalf("Failed to run model training script: %v", err)
+	}
+	log.Println("Model training output:", output)
+
+	// Run the model training script on the updated container
+	evalContainer := modelsContainer.WithExec([]string{
+		"python", "-u", evaluationScriptPath,
+		"--artifacts_dir", artifactsDir,
+	})
+
+	// Get the output from the feature extraction script
+	output, err = evalContainer.Stdout(ctx)
 	if err != nil {
 		log.Fatalf("Failed to run model training script: %v", err)
 	}
