@@ -2,12 +2,10 @@ import time
 from mlflow.entities.model_registry.model_version_status import ModelVersionStatus
 import datetime
 import mlflow
-import pandas as pd
 import os
 import datetime
 import json
 import pandas as pd
-import mlflow
 import mlflow.pyfunc
 import argparse
 from mlflow_client import get_mlflow_client
@@ -90,7 +88,6 @@ def main(args):
     print(f"Registered model: {run_id}")
 
     # Register best model
-
     if run_id is not None:
         print(f'Best model found: {run_id}')
 
@@ -104,7 +101,6 @@ def main(args):
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Model Training Script")
-    parser.add_argument("--artifacts_dir", type=str, required=True, help="Path to save artifacts")
 
     args = parser.parse_args()
     main(args)

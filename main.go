@@ -21,6 +21,7 @@ const (
 	featuresScriptPath      = "./scripts/features.py"      // Path to the features extraction script
 	trainingScriptPath      = "./scripts/train.py"         // Path to the model training script
 	evaluationScriptPath    = "./scripts/evaluation.py"    // Path to the model evaluation script
+	deploymentScriptPath    = "./scripts/deployment.py"    // Path to the model deployment script
 
 	// Script parameters
 	minDate = "2024-01-01" // Date range for the preprocessing script
@@ -86,21 +87,33 @@ func main() {
 		"--models_dir", modelsDir,
 	})
 
-	// Get the output from the feature extraction script
+	// Get the output from the model training script
 	output, err = modelsContainer.Stdout(ctx)
 	if err != nil {
 		log.Fatalf("Failed to run model training script: %v", err)
 	}
 	log.Println("Model training output:", output)
 
-	// Run the model training script on the updated container
+	// Run the model evaluation script on the updated container
 	evalContainer := modelsContainer.WithExec([]string{
 		"python", "-u", evaluationScriptPath,
 		"--artifacts_dir", artifactsDir,
 	})
 
-	// Get the output from the feature extraction script
+	// Get the output from the model evaluation script
 	output, err = evalContainer.Stdout(ctx)
+	if err != nil {
+		log.Fatalf("Failed to run model training script: %v", err)
+	}
+	log.Println("Model training output:", output)
+
+	// Run the model deployment script on the updated container
+	deployContainer := evalContainer.WithExec([]string{
+		"python", "-u", evaluationScriptPath,
+	})
+
+	// Get the output from the model deployment script
+	output, err = deployContainer.Stdout(ctx)
 	if err != nil {
 		log.Fatalf("Failed to run model training script: %v", err)
 	}
