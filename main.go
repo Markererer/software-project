@@ -8,18 +8,23 @@ import (
 )
 
 const (
-	rawDataDir       = "./data/raw"       // Local path to raw data
-	artifactsDir     = "./data/artifacts" // Local path to save artifacts
-	interimDir       = "./data/interim"   // Local path to save interim data
-	processedDataDir = "./data/processed" // Local path to save processed data
+	// Folder paths
+	rawDataDir       = "./data/raw"       // Path to raw data
+	artifactsDir     = "./artifacts"      // Path to save artifacts
+	interimDir       = "./data/interim"   // Path to save interim data
+	processedDataDir = "./data/processed" // Path to save processed data
+	modelsDir        = "./models"         // Path to save models
+	mlrunsDir        = "./mlruns"         // Path to save MLFlow runs
 
-	// Preprocessing
+	// Python scripts
 	preprocessingScriptPath = "./scripts/preprocessing.py" // Path to the data preprocessing script
-	minDate                 = "2024-01-01"                 // Date range
-	maxDate                 = "2024-01-31"
+	featuresScriptPath      = "./scripts/features.py"      // Path to the features extraction script
+	trainingScriptPath      = "./scripts/train.py"         // Path to the model training script
+	evaluationScriptPath    = "./scripts/evaluation.py"    // Path to the model evaluation script
 
-	// Features
-	featuresScriptPath = "./scripts/features.py" // Path to the features extraction script
+	// Script parameters
+	minDate = "2024-01-01" // Date range for the preprocessing script
+	maxDate = "2024-01-31"
 )
 
 func main() {
@@ -69,4 +74,35 @@ func main() {
 		log.Fatalf("Failed to run features script: %v", err)
 	}
 	log.Println("Feature extraction output:", output)
+
+	// Run the model training script on the updated container
+	modelsContainer := featuresContainer.WithExec([]string{
+		"python", "-u", trainingScriptPath,
+		"--raw_data_dir", rawDataDir,
+		"--interim_data_dir", interimDir,
+		"--processed_data_dir", processedDataDir,
+		"--artifacts_dir", artifactsDir,
+		"--mlruns_dir", mlrunsDir,
+		"--models_dir", modelsDir,
+	})
+
+	// Get the output from the feature extraction script
+	output, err = modelsContainer.Stdout(ctx)
+	if err != nil {
+		log.Fatalf("Failed to run model training script: %v", err)
+	}
+	log.Println("Model training output:", output)
+
+	// Run the model training script on the updated container
+	evalContainer := modelsContainer.WithExec([]string{
+		"python", "-u", evaluationScriptPath,
+		"--artifacts_dir", artifactsDir,
+	})
+
+	// Get the output from the feature extraction script
+	output, err = evalContainer.Stdout(ctx)
+	if err != nil {
+		log.Fatalf("Failed to run model training script: %v", err)
+	}
+	log.Println("Model training output:", output)
 }
