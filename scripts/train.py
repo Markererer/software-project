@@ -4,7 +4,7 @@ import json
 import joblib
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import cohen_kappa_score, f1_score, accuracy_score, confusion_matrix, classification_report
+from sklearn.metrics import f1_score, classification_report
 from sklearn.model_selection import train_test_split, RandomizedSearchCV
 from scipy.stats import uniform, randint
 from xgboost import XGBRFClassifier
