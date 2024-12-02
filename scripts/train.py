@@ -89,8 +89,6 @@ def main(args):
         model_grid = RandomizedSearchCV(model, param_distributions= params, verbose=3, n_iter=10, cv=3)
         model_grid.fit(X_train, y_train)
 
-        best_model = model_grid.best_estimator_
-
         y_pred_train = model_grid.predict(X_train)
         y_pred_test = model_grid.predict(X_test)
 
@@ -101,11 +99,7 @@ def main(args):
         
         # Store model for model interpretability
         joblib.dump(value=model, filename=lr_model_path)
-
-        # Dump the best performing model
-        lr_model_path = (os.path.join(args.models_dir, "lead_model_lr.json"))
-        best_model.save_model(lr_model_path)
-            
+           
         # Custom python model for predicting probability 
         mlflow.pyfunc.log_model('model', python_model=lr_wrapper(model))
 
