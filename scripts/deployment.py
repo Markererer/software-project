@@ -35,7 +35,6 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Model Training Script")
-    parser.add_argument("--artifacts_dir", type=str, required=True, help="Path to save artifacts")
 
     args = parser.parse_args()
     main(args)
