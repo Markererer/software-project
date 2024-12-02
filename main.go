@@ -109,7 +109,7 @@ func main() {
 
 	// Run the model deployment script on the updated container
 	deployContainer := evalContainer.WithExec([]string{
-		"python", "-u", evaluationScriptPath,
+		"python", "-u", deploymentScriptPath,
 	})
 
 	// Get the output from the model deployment script
