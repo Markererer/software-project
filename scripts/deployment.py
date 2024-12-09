@@ -19,9 +19,7 @@ def save_model(model_uri, output_dir):
         print("Detected XGBoost model.")
         model_artifact_uri = loaded_model.metadata.artifact_uri
 
-        local_model_dir = mlflow.artifacts.download_artifacts(
-            artifact_uri=model_artifact_uri
-        )
+        local_model_dir = mlflow.artifacts.download_artifacts(artifact_path=model_artifact_uri)
 
         xgb_model = xgb.Booster()
         xgb_model.load_model(local_model_dir)
