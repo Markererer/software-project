@@ -131,7 +131,6 @@ if __name__ == "__main__":
     parser.add_argument("--processed_data_dir", type=str, required=True, help="Path to save processed data")
     parser.add_argument("--artifacts_dir", type=str, required=True, help="Path to save artifacts")
     parser.add_argument("--mlruns_dir", type=str, required=True, help="Path to save MLFlow runs")
-    parser.add_argument("--models_dir", type=str, required=True, help="Path to save models")
 
     args = parser.parse_args()
     main(args)

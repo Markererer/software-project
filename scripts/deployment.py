@@ -1,6 +1,9 @@
 import time
 import argparse
 from mlflow_client import get_mlflow_client
+import mlflow
+import joblib
+import os
 
 def main(args):
     model_version = 1
@@ -32,8 +35,15 @@ def main(args):
     else:
         print('Model already in staging')
 
+    # Save model so it can go through inference testing
+    model_uri = f"models:/{model_name}/Staging"
+    loaded_model = mlflow.pyfunc.load_model(model_uri)    
+    joblib.dump(loaded_model, os.path.join(args.models_dir, "model.pkl"))
+    print("Model has been saved as model.pkl.")
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Model Training Script")
+    parser.add_argument("--models_dir", type=str, required=True, help="Path to save models")
 
     args = parser.parse_args()
     main(args)

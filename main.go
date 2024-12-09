@@ -72,7 +72,7 @@ func main() {
 	// Get the output from the feature extraction script
 	output, err = featuresContainer.Stdout(ctx)
 	if err != nil {
-		log.Fatalf("Failed to run features script: %v", err)
+		log.Fatalf("Failed to run feature extraction script: %v", err)
 	}
 	log.Println("Feature extraction output:", output)
 
@@ -84,7 +84,6 @@ func main() {
 		"--processed_data_dir", processedDataDir,
 		"--artifacts_dir", artifactsDir,
 		"--mlruns_dir", mlrunsDir,
-		"--models_dir", modelsDir,
 	})
 
 	// Get the output from the model training script
@@ -103,19 +102,28 @@ func main() {
 	// Get the output from the model evaluation script
 	output, err = evalContainer.Stdout(ctx)
 	if err != nil {
-		log.Fatalf("Failed to run model training script: %v", err)
+		log.Fatalf("Failed to run model evaluation script: %v", err)
 	}
 	log.Println("Model evaluation output:", output)
 
 	// Run the model deployment script on the updated container
 	deployContainer := evalContainer.WithExec([]string{
 		"python", "-u", deploymentScriptPath,
+		"--models_dir", modelsDir,
 	})
 
 	// Get the output from the model deployment script
 	output, err = deployContainer.Stdout(ctx)
 	if err != nil {
-		log.Fatalf("Failed to run model training script: %v", err)
+		log.Fatalf("Failed to run model deployment script: %v", err)
 	}
 	log.Println("Model deployment output:", output)
+
+	// Export the model from the container
+	modelsDirectory := deployContainer.Directory(modelsDir)
+	exportedPath, err := modelsDirectory.Export(ctx, modelsDir)
+	if err != nil {
+		log.Fatalf("Failed to export models directory: %v", err)
+	}
+	log.Printf("Model exported successfully to %s on the host", exportedPath)
 }
