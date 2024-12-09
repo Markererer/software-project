@@ -73,7 +73,7 @@ def main(args):
         mlflow.log_metric('f1_score', f1_score(y_test, y_pred_test))
         for param_name, param_value in best_model_xgboost_params.items():
             mlflow.log_param(f"xgb_{param_name}", param_value)
-        mlflow.xgboost.log_model(xgboost_model, artifact_path="xgboost_model")
+        mlflow.xgboost.log_model(xgboost_model, artifact_path="model")
 
         xgb_classification_report = classification_report(y_test, y_pred_test, output_dict=True)
 
