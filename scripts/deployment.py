@@ -4,13 +4,7 @@ from mlflow_client import get_mlflow_client
 import mlflow
 import joblib
 import os
-
-class lr_wrapper(mlflow.pyfunc.PythonModel):
-    def __init__(self, model):
-        self.model = model
-    
-    def predict(self, context, model_input):
-        return self.model.predict_proba(model_input)[:, 1]
+from lr_wrapper import lr_wrapper
 
 def main(args):
     model_version = 1
