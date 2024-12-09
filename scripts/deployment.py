@@ -17,14 +17,14 @@ def save_model(model_uri, output_dir):
     # Check if the model is XGBoost
     if "xgboost" in flavors:
         print("Detected XGBoost model.")
-        artifact_path = flavors["xgboost"]["data"]
+        model_artifact_uri = loaded_model.metadata.artifact_uri
 
-        local_model_path = mlflow.artifacts.download_artifacts(
-            artifact_uri=f"{model_uri}/{artifact_path}"
+        local_model_dir = mlflow.artifacts.download_artifacts(
+            artifact_uri=model_artifact_uri
         )
 
         xgb_model = xgb.Booster()
-        xgb_model.load_model(local_model_path)
+        xgb_model.load_model(local_model_dir)
 
         joblib.dump(xgb_model, os.path.join(output_dir, "model.pkl"))
         print("Standalone XGBoost model saved as model.pkl.")
