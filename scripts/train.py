@@ -50,7 +50,6 @@ def main(args):
     experiment_id = mlflow.get_experiment_by_name(experiment_name).experiment_id
 
     with mlflow.start_run(experiment_id=experiment_id) as run:
-        # Train the XGBoost model
         model = XGBRFClassifier(random_state=42)
         params = {
             "learning_rate": uniform(1e-2, 3e-1),
@@ -68,61 +67,58 @@ def main(args):
         print("The best-performing XGBoost model parameters were: " + str(best_model_xgboost_params))
 
         y_pred_test = model_grid.predict(X_test)
-
         xgboost_model = model_grid.best_estimator_
 
+        # Log XGBoost metrics and model
         mlflow.log_metric('f1_score', f1_score(y_test, y_pred_test))
-
         for param_name, param_value in best_model_xgboost_params.items():
             mlflow.log_param(f"xgb_{param_name}", param_value)
-
         mlflow.xgboost.log_model(xgboost_model, artifact_path="xgboost_model")
 
         xgb_classification_report = classification_report(y_test, y_pred_test, output_dict=True)
 
-        # Train the Logistic Regression model
+    with mlflow.start_run(experiment_id=experiment_id) as run:
         model = LogisticRegression()
         lr_model_path = (os.path.join(args.artifacts_dir, "lead_model_lr.pkl"))
 
         params = {
-                'solver': ["newton-cg", "lbfgs", "liblinear", "sag", "saga"],
-                'penalty':  ["none", "l1", "l2", "elasticnet"],
-                'C' : [100, 10, 1.0, 0.1, 0.01]
+            'solver': ["newton-cg", "lbfgs", "liblinear", "sag", "saga"],
+            'penalty': ["none", "l1", "l2", "elasticnet"],
+            'C': [100, 10, 1.0, 0.1, 0.01]
         }
-        model_grid = RandomizedSearchCV(model, param_distributions= params, verbose=3, n_iter=10, cv=3)
+        model_grid = RandomizedSearchCV(model, param_distributions=params, verbose=3, n_iter=10, cv=3)
         model_grid.fit(X_train, y_train)
 
         y_pred_test = model_grid.predict(X_test)
 
-        # Log artifacts
+        # Log LR metrics and artifacts
         mlflow.log_metric('f1_score', f1_score(y_test, y_pred_test))
         mlflow.log_artifacts("artifacts", artifact_path="model")
         mlflow.log_param("data_version", "00000")
-        
-        # Store model for model interpretability
+
+        # Store model for interpretability
         joblib.dump(value=model, filename=lr_model_path)
-           
-        # Custom python model for predicting probability 
+
+        # Custom python model for predicting probability
         mlflow.pyfunc.log_model('model', python_model=lr_wrapper(model))
 
         lr_classification_report = classification_report(y_test, y_pred_test, output_dict=True)
 
-        model_results_path = os.path.join(args.artifacts_dir, "model_results.json")
-        model_results = {
-            "XGBoost": xgb_classification_report,
-            "LogisticRegression": lr_classification_report
-        }
+    model_results = {
+        "XGBoost": xgb_classification_report,
+        "LogisticRegression": lr_classification_report
+    }
 
-        column_list_path = (os.path.join(args.artifacts_dir, "columns_list.json"))
-        with open(column_list_path, 'w+') as columns_file:
-            columns = {'column_names': list(X_train.columns)}
-            json.dump(columns, columns_file)
+    column_list_path = (os.path.join(args.artifacts_dir, "columns_list.json"))
+    with open(column_list_path, 'w+') as columns_file:
+        columns = {'column_names': list(X_train.columns)}
+        json.dump(columns, columns_file)
 
-        model_results_path = (os.path.join(args.artifacts_dir, "model_results.json"))
-        with open(model_results_path, 'w+') as results_file:        
-            json.dump(model_results, results_file)
+    model_results_path = (os.path.join(args.artifacts_dir, "model_results.json"))
+    with open(model_results_path, 'w+') as results_file:        
+        json.dump(model_results, results_file)
 
-    print("Train script finished without errors.")    
+    print("Train script finished without errors.")  
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Model Training Script")
