@@ -17,9 +17,9 @@ def save_model(model_uri, output_dir):
     # Check if the model is XGBoost
     if "xgboost" in flavors:
         print("Detected XGBoost model.")
-        model_artifact_uri = loaded_model.metadata.artifact_uri
+        model_artifact_path = loaded_model.metadata.artifact_path
 
-        local_model_dir = mlflow.artifacts.download_artifacts(artifact_path=model_artifact_uri)
+        local_model_dir = mlflow.artifacts.download_artifacts(artifact_path=model_artifact_path)
 
         xgb_model = xgb.Booster()
         xgb_model.load_model(local_model_dir)
