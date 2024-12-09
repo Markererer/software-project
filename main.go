@@ -105,7 +105,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to run model training script: %v", err)
 	}
-	log.Println("Model training output:", output)
+	log.Println("Model evaluation output:", output)
 
 	// Run the model deployment script on the updated container
 	deployContainer := evalContainer.WithExec([]string{
@@ -117,5 +117,5 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to run model training script: %v", err)
 	}
-	log.Println("Model training output:", output)
+	log.Println("Model deployment output:", output)
 }
