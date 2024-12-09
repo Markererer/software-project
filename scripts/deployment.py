@@ -17,10 +17,13 @@ def save_model(loaded_model, output_dir):
         # Get the artifact path for the XGBoost model
         artifact_path = flavors["xgboost"]["data"]
 
-        # Load the XGBoost model from the artifact
-        xgb_model = xgb.Booster()
-        xgb_model.load_model(artifact_path)
+        # Download the artifact to a local directory
+        local_model_path = mlflow.artifacts.download_artifacts(artifact_path)
 
+        # Load the XGBoost model from the downloaded file
+        xgb_model = xgb.Booster()
+        xgb_model.load_model(local_model_path)
+        
         # Save the XGBoost model as a .pkl file using joblib
         joblib.dump(xgb_model, os.path.join(output_dir, "model.pkl"))
         print("Standalone XGBoost model saved as model.pkl.")
