@@ -39,7 +39,13 @@ def main(args):
     # Save model so it can go through inference testing
     model_uri = f"models:/{model_name}/Staging"
     loaded_model = mlflow.pyfunc.load_model(model_uri)
+    print(type(loaded_model))
+    print(loaded_model.metadata)
+    print(dir(loaded_model))
     underlying_model = loaded_model._model_impl # Save the underlying model without the MLFlow dependency
+    print(type(underlying_model))
+    print(underlying_model.metadata)
+    print(dir(underlying_model))
     joblib.dump(underlying_model, os.path.join(args.models_dir, "model.pkl"))
     print("Model has been saved as model.pkl.")
 
