@@ -5,6 +5,35 @@ import mlflow
 import joblib
 import os
 from lr_wrapper import lr_wrapper
+import xgboost as xgb
+
+def save_model(loaded_model, output_dir):
+    # Get the flavors metadata
+    flavors = loaded_model.metadata.flavors
+
+    # Check if the model is XGBoost
+    if "xgboost" in flavors:
+        print("Detected XGBoost model.")
+        # Get the artifact path for the XGBoost model
+        artifact_path = flavors["xgboost"]["data"]
+
+        # Load the XGBoost model from the artifact
+        xgb_model = xgb.Booster()
+        xgb_model.load_model(artifact_path)
+
+        # Save the XGBoost model as a .pkl file using joblib
+        joblib.dump(xgb_model, os.path.join(output_dir, "model.pkl"))
+        print("Standalone XGBoost model saved as model.pkl.")
+
+    # Check if the model is scikit-learn
+    elif "python_function" in flavors and flavors["python_function"]["loader_module"] == "mlflow.sklearn":
+        print("Detected scikit-learn model.")
+        # Access the scikit-learn model
+        sklearn_model = loaded_model._model_impl
+
+        # Save the scikit-learn model as a .pkl file using joblib
+        joblib.dump(sklearn_model, os.path.join(output_dir, "model.pkl"))
+        print("Standalone scikit-learn model saved as model.pkl.")
 
 def main(args):
     model_version = 1
@@ -39,15 +68,10 @@ def main(args):
     # Save model so it can go through inference testing
     model_uri = f"models:/{model_name}/Staging"
     loaded_model = mlflow.pyfunc.load_model(model_uri)
-    print(type(loaded_model))
-    print(loaded_model.metadata)
-    print(dir(loaded_model))
-    underlying_model = loaded_model._model_impl # Save the underlying model without the MLFlow dependency
-    print(type(underlying_model))
-    print(underlying_model.metadata)
-    print(dir(underlying_model))
-    joblib.dump(underlying_model, os.path.join(args.models_dir, "model.pkl"))
-    print("Model has been saved as model.pkl.")
+
+    # Specify output directory for saving the model
+    output_dir = args.models_dir
+    save_model(loaded_model, output_dir)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Model Training Script")
