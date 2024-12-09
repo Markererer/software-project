@@ -6,10 +6,8 @@ import joblib
 import os
 from lr_wrapper import lr_wrapper
 import xgboost as xgb
-import logging
-
-# Configure logging
-logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
+import atexit
+import sys
 
 def save_model(loaded_model, output_dir):
     # Get the flavors metadata
@@ -22,12 +20,11 @@ def save_model(loaded_model, output_dir):
         artifact_path = flavors["xgboost"]["data"]
 
         # Download the artifact to a local directory
-        #local_model_path = mlflow.artifacts.download_artifacts(artifact_path)
+        local_model_path = mlflow.artifacts.download_artifacts(artifact_path)
 
         # Load the XGBoost model from the downloaded file
         xgb_model = xgb.Booster()
-        #xgb_model.load_model(local_model_path)
-        xgb_model.load_model(artifact_path)
+        xgb_model.load_model(local_model_path)
         
         # Save the XGBoost model as a .pkl file using joblib
         joblib.dump(xgb_model, os.path.join(output_dir, "model.pkl"))
@@ -73,26 +70,24 @@ def main(args):
     else:
         print('Model already in staging')
 
-    try:
-        logging.debug("Starting the script...")
-        model_uri = f"models:/{model_name}/Staging"
-        loaded_model = mlflow.pyfunc.load_model(model_uri)
-        logging.debug(f"Loaded model from URI: {model_uri}")
+    # Save model so it can go through inference testing
+    model_uri = f"models:/{model_name}/Staging"
+    loaded_model = mlflow.pyfunc.load_model(model_uri)
 
-        # Specify output directory
-        output_dir = args.models_dir
-        if not os.path.exists(output_dir):
-            logging.debug(f"Creating output directory: {output_dir}")
-            os.makedirs(output_dir, exist_ok=True)
+    # Specify output directory for saving the model
+    output_dir = args.models_dir
+    save_model(loaded_model, output_dir)
 
-        save_model(loaded_model, output_dir)
-        logging.debug("Model export completed.")
+def exit_handler():
+    print("Script exited unexpectedly!")
+    sys.stdout.flush()
 
-    except Exception as e:
-        logging.error(f"Script failed with error: {e}", exc_info=True)
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Model Training Script")
     parser.add_argument("--models_dir", type=str, required=True, help="Path to save models")
 
     args = parser.parse_args()
+    atexit.register(exit_handler)
+    print("Script is running with exit handler.")
+    sys.stdout.flush()
     main(args)
