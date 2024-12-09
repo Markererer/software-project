@@ -18,6 +18,13 @@ import pickle #🥒
 warnings.filterwarnings('ignore')
 pd.set_option('display.float_format', lambda x: "%.3f" % x)
 
+class lr_wrapper(mlflow.pyfunc.PythonModel):
+    def __init__(self, model):
+        self.model = model
+    
+    def predict(self, context, model_input):
+        return self.model.predict_proba(model_input)[:, 1]
+
 def main(args):
     # Ensure the MLRuns folder exists
     os.makedirs(args.mlruns_dir, exist_ok=True)
@@ -35,41 +42,6 @@ def main(args):
         X, y, random_state=42, test_size=0.15, stratify=y
     )
 
-    # Model training
-    model = XGBRFClassifier(random_state=42)
-    params = {
-        "learning_rate": uniform(1e-2, 3e-1),
-        "min_split_loss": uniform(0, 10),
-        "max_depth": randint(3, 10),
-        "subsample": uniform(0, 1),
-        "objective": ["reg:squarederror", "binary:logistic", "reg:logistic"],
-        "eval_metric": ["aucpr", "error"]
-    }
-
-    model_grid = RandomizedSearchCV(model, param_distributions=params, n_jobs=-1, verbose=3, n_iter=10, cv=10)
-    model_grid.fit(X_train, y_train)
-
-    best_model_xgboost_params = model_grid.best_params_
-    print("The best-performing XGBoost model parameters were: " + str(best_model_xgboost_params))
-
-    y_pred_train = model_grid.predict(X_train)
-    y_pred_test = model_grid.predict(X_test)
-
-    xgboost_model = model_grid.best_estimator_
-    xgboost_model_path = (os.path.join(args.models_dir, "lead_model_xgboost.json"))
-    xgboost_model.save_model(xgboost_model_path)
-
-    model_results = {
-        xgboost_model_path: classification_report(y_train, y_pred_train, output_dict=True)
-    }
-
-    class lr_wrapper(mlflow.pyfunc.PythonModel):
-        def __init__(self, model):
-            self.model = model
-        
-        def predict(self, context, model_input):
-            return self.model.predict_proba(model_input)[:, 1]
-
     current_date = datetime.datetime.now().strftime("%Y_%B_%d")
     experiment_name = current_date
     mlflow.set_experiment(experiment_name)
@@ -78,6 +50,37 @@ def main(args):
     experiment_id = mlflow.get_experiment_by_name(experiment_name).experiment_id
 
     with mlflow.start_run(experiment_id=experiment_id) as run:
+        # Train the XGBoost model
+        model = XGBRFClassifier(random_state=42)
+        params = {
+            "learning_rate": uniform(1e-2, 3e-1),
+            "min_split_loss": uniform(0, 10),
+            "max_depth": randint(3, 10),
+            "subsample": uniform(0, 1),
+            "objective": ["reg:squarederror", "binary:logistic", "reg:logistic"],
+            "eval_metric": ["aucpr", "error"]
+        }
+
+        model_grid = RandomizedSearchCV(model, param_distributions=params, n_jobs=-1, verbose=3, n_iter=10, cv=10)
+        model_grid.fit(X_train, y_train)
+
+        best_model_xgboost_params = model_grid.best_params_
+        print("The best-performing XGBoost model parameters were: " + str(best_model_xgboost_params))
+
+        y_pred_test = model_grid.predict(X_test)
+
+        xgboost_model = model_grid.best_estimator_
+
+        mlflow.log_metric('f1_score', f1_score(y_test, y_pred_test))
+
+        for param_name, param_value in best_model_xgboost_params.items():
+            mlflow.log_param(f"xgb_{param_name}", param_value)
+
+        mlflow.xgboost.log_model(xgboost_model, artifact_path="xgboost_model")
+
+        xgb_classification_report = classification_report(y_test, y_pred_test, output_dict=True)
+
+        # Train the Logistic Regression model
         model = LogisticRegression()
         lr_model_path = (os.path.join(args.artifacts_dir, "lead_model_lr.pkl"))
 
@@ -89,7 +92,6 @@ def main(args):
         model_grid = RandomizedSearchCV(model, param_distributions= params, verbose=3, n_iter=10, cv=3)
         model_grid.fit(X_train, y_train)
 
-        y_pred_train = model_grid.predict(X_train)
         y_pred_test = model_grid.predict(X_test)
 
         # Log artifacts
@@ -103,22 +105,22 @@ def main(args):
         # Custom python model for predicting probability 
         mlflow.pyfunc.log_model('model', python_model=lr_wrapper(model))
 
+        lr_classification_report = classification_report(y_test, y_pred_test, output_dict=True)
 
-    model_classification_report = classification_report(y_test, y_pred_test, output_dict=True)
+        model_results_path = os.path.join(args.artifacts_dir, "model_results.json")
+        model_results = {
+            "XGBoost": xgb_classification_report,
+            "LogisticRegression": lr_classification_report
+        }
 
-    best_model_lr_params = model_grid.best_params_
-    print("The best-performing Logistic Regression model parameters were: " + str(best_model_lr_params))
+        column_list_path = (os.path.join(args.artifacts_dir, "columns_list.json"))
+        with open(column_list_path, 'w+') as columns_file:
+            columns = {'column_names': list(X_train.columns)}
+            json.dump(columns, columns_file)
 
-    model_results[lr_model_path] = model_classification_report
-
-    column_list_path = (os.path.join(args.artifacts_dir, "columns_list.json"))
-    with open(column_list_path, 'w+') as columns_file:
-        columns = {'column_names': list(X_train.columns)}
-        json.dump(columns, columns_file)
-
-    model_results_path = (os.path.join(args.artifacts_dir, "model_results.json"))
-    with open(model_results_path, 'w+') as results_file:        
-        json.dump(model_results, results_file)
+        model_results_path = (os.path.join(args.artifacts_dir, "model_results.json"))
+        with open(model_results_path, 'w+') as results_file:        
+            json.dump(model_results, results_file)
 
     print("Train script finished without errors.")    
 

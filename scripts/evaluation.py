@@ -72,7 +72,7 @@ def main(args):
     run_id = None
 
     if prod_model_exists:
-        data, details = mlflow.get_run(prod_model_run_id)
+        data, _ = mlflow.get_run(prod_model_run_id)
         prod_model_score = data[1]["metrics.f1_score"]
 
         model_status["current"] = train_model_score
