@@ -19,10 +19,8 @@ def save_model(model_uri, output_dir):
         print("Detected XGBoost model.")
         artifact_path = flavors["xgboost"]["data"]
 
-        # IMPORTANT: Provide the model_uri and the artifact_path.
         local_model_path = mlflow.artifacts.download_artifacts(
-            artifact_uri=model_uri, 
-            artifact_path=artifact_path
+            artifact_uri=f"{model_uri}/{artifact_path}"
         )
 
         xgb_model = xgb.Booster()
