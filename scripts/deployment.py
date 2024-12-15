@@ -13,8 +13,6 @@ def save_model(model_uri, output_dir):
     loaded_model = mlflow.pyfunc.load_model(model_uri)
     # Get the flavors metadata
     flavors = loaded_model.metadata.flavors
-    print("debug4")
-    print(f"Flavors: {flavors}")
 
     # Check if the model is XGBoost
     if "xgboost" in flavors:
@@ -24,15 +22,12 @@ def save_model(model_uri, output_dir):
         joblib.dump(xgb_model, os.path.join(output_dir, "model.pkl"))
         print("Standalone XGBoost model saved as model.pkl.")
 
-    # Check if the model is scikit-learn
-    elif "python_function" in flavors and flavors["python_function"]["loader_module"] == "mlflow.sklearn":
-        print("Detected scikit-learn model.")
-        # Access the scikit-learn model
-        sklearn_model = mlflow.sklearn.load_model(model_uri=model_uri)
-
-        # Save the scikit-learn model as a .pkl file using joblib
-        joblib.dump(sklearn_model, os.path.join(output_dir, "model.pkl"))
-        print("Standalone scikit-learn model saved as model.pkl.")
+    # Otherwise model is Logistic Regression
+    else:
+        print("Detected Logistic Regression model.")
+        # Save the Logistic Regression model as a .pkl file using joblib
+        joblib.dump(loaded_model, os.path.join(output_dir, "model.pkl"))
+        print("Standalone Logistic Regression model saved as model.pkl.")
 
 def main(args):
     model_version = 1
