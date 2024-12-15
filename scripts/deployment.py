@@ -25,8 +25,9 @@ def save_model(model_uri, output_dir):
     # Otherwise model is Logistic Regression
     else:
         print("Detected Logistic Regression model.")
-        # Save the Logistic Regression model as a .pkl file using joblib
-        joblib.dump(loaded_model, os.path.join(output_dir, "model.pkl"))
+        lr_model = mlflow.sklearn.load_model(model_uri=model_uri)
+
+        joblib.dump(lr_model, os.path.join(output_dir, "model.pkl"))
         print("Standalone Logistic Regression model saved as model.pkl.")
 
 def main(args):
