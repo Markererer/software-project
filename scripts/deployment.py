@@ -12,7 +12,9 @@ import sys
 def save_model(model_uri, output_dir):
     loaded_model = mlflow.pyfunc.load_model(model_uri)
     # Get the flavors metadata
+    print("debug3")
     flavors = loaded_model.metadata.flavors
+    print("debug4")
 
     # Check if the model is XGBoost
     if "xgboost" in flavors:
@@ -61,8 +63,6 @@ def main(args):
         wait_for_deployment(model_name, model_version, 'Staging')
     else:
         print('Model already in staging')
-
-    print("debug3")
 
     # Save model so it can go through inference testing
     model_uri = f"models:/{model_name}/Staging"
