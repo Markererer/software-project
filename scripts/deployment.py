@@ -26,7 +26,7 @@ def save_model(model_uri, output_dir):
     elif "python_function" in flavors and flavors["python_function"]["loader_module"] == "mlflow.sklearn":
         print("Detected scikit-learn model.")
         # Access the scikit-learn model
-        sklearn_model = loaded_model._model_impl
+        sklearn_model = mlflow.sklearn.load_model(model_uri=model_uri)
 
         # Save the scikit-learn model as a .pkl file using joblib
         joblib.dump(sklearn_model, os.path.join(output_dir, "model.pkl"))
