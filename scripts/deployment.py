@@ -7,6 +7,13 @@ import os
 import atexit
 import sys
 
+class lr_wrapper(mlflow.pyfunc.PythonModel):
+    def __init__(self, model):
+        self.model = model
+    
+    def predict(self, context, model_input):
+        return self.model.predict_proba(model_input)[:, 1]
+
 def save_model(model_uri, output_dir):
     try:
         print("Attempting to load as an XGBoost model...")
@@ -18,7 +25,7 @@ def save_model(model_uri, output_dir):
         try:
             print("Attempting to load as a scikit-learn model...")
             lr_model = mlflow.sklearn.load_model(model_uri=model_uri)
-            joblib.dump(lr_model, os.path.join(output_dir, "model.pkl"))
+            joblib.dump(lr_wrapper(lr_model), os.path.join(output_dir, "model.pkl"))
             print("Standalone Logistic Regression model saved as model.pkl.")
         except Exception as e:
             print(f"Could not load model: {e}")
