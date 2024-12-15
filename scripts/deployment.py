@@ -38,6 +38,8 @@ def main(args):
     client = get_mlflow_client()
     model_name = "lead_model"
 
+    print("debug")
+
     def wait_for_deployment(model_name, model_version, stage='Staging'):
         status = False
         while not status:

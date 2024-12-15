@@ -69,11 +69,14 @@ def main(args):
         #    mlflow.log_param(f"xgb_{param_name}", param_value)
         #mlflow.xgboost.log_model(xgboost_model, artifact_path="model")
 
-        xgb_classification_report = classification_report(y_test, y_pred_test, output_dict=True)
+        # Store model for interpretability
+        lr_model_path = (os.path.join(args.artifacts_dir, "lead_model_xgboost.pkl"))
+        joblib.dump(value=model, filename=lr_model_path)
+
+        #xgb_classification_report = classification_report(y_test, y_pred_test, output_dict=True)
 
     with mlflow.start_run(experiment_id=experiment_id) as run:
         model = LogisticRegression()
-        lr_model_path = (os.path.join(args.artifacts_dir, "lead_model_lr.pkl"))
 
         params = {
             'solver': ["newton-cg", "lbfgs", "liblinear", "sag", "saga"],
@@ -91,6 +94,7 @@ def main(args):
         mlflow.log_param("data_version", "00000")
 
         # Store model for interpretability
+        lr_model_path = (os.path.join(args.artifacts_dir, "lead_model_lr.pkl"))
         joblib.dump(value=model, filename=lr_model_path)
 
         # Custom python model for predicting probability
@@ -99,7 +103,7 @@ def main(args):
         lr_classification_report = classification_report(y_test, y_pred_test, output_dict=True)
 
     model_results = {
-        "XGBoost": xgb_classification_report,
+        #"XGBoost": xgb_classification_report,
         "LogisticRegression": lr_classification_report
     }
 
