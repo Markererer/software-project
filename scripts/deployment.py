@@ -4,31 +4,25 @@ from mlflow_client import get_mlflow_client
 import mlflow
 import joblib
 import os
-from lr_wrapper import lr_wrapper
-import xgboost as xgb
 import atexit
 import sys
 
 def save_model(model_uri, output_dir):
-    loaded_model = mlflow.pyfunc.load_model(model_uri)
-    # Get the flavors metadata
-    flavors = loaded_model.metadata.flavors
-
-    # Check if the model is XGBoost
-    if "xgboost" in flavors:
-        print("Detected XGBoost model.")
+    try:
+        print("Attempting to load as an XGBoost model...")
         xgb_model = mlflow.xgboost.load_model(model_uri=model_uri)
-
         joblib.dump(xgb_model, os.path.join(output_dir, "model.pkl"))
         print("Standalone XGBoost model saved as model.pkl.")
-
-    # Otherwise model is Logistic Regression
-    else:
-        print("Detected Logistic Regression model.")
-        lr_model = mlflow.sklearn.load_model(model_uri=model_uri)
-
-        joblib.dump(lr_model, os.path.join(output_dir, "model.pkl"))
-        print("Standalone Logistic Regression model saved as model.pkl.")
+    except Exception as e:
+        print(f"Not an XGBoost model: {e}")
+        try:
+            print("Attempting to load as a scikit-learn model...")
+            lr_model = mlflow.sklearn.load_model(model_uri=model_uri)
+            joblib.dump(lr_model, os.path.join(output_dir, "model.pkl"))
+            print("Standalone Logistic Regression model saved as model.pkl.")
+        except Exception as e:
+            print(f"Could not load model: {e}")
+            raise # Fail, print
 
 def main(args):
     model_version = 1
