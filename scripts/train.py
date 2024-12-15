@@ -13,7 +13,6 @@ import mlflow.pyfunc
 import warnings
 import argparse
 import pickle #🥒
-from lr_wrapper import lr_wrapper
 
 # Set up warnings and pandas options
 warnings.filterwarnings('ignore')
@@ -98,7 +97,7 @@ def main(args):
         joblib.dump(value=model, filename=lr_model_path)
 
         # Custom python model for predicting probability
-        mlflow.pyfunc.log_model('model', python_model=lr_wrapper(model))
+        mlflow.pyfunc.log_model('model', python_model=model)
 
         lr_classification_report = classification_report(y_test, y_pred_test, output_dict=True)
 
