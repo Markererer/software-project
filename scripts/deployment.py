@@ -51,8 +51,6 @@ def main(args):
                 time.sleep(2)
         return status
 
-    print("debug")
-
     model_version_details = dict(client.get_model_version(name=model_name,version=model_version))
     if model_version_details['current_stage'] != 'Staging':
         client.transition_model_version_stage(
@@ -63,6 +61,8 @@ def main(args):
         wait_for_deployment(model_name, model_version, 'Staging')
     else:
         print('Model already in staging')
+
+    print("debug3")
 
     # Save model so it can go through inference testing
     model_uri = f"models:/{model_name}/Staging"
