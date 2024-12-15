@@ -55,4 +55,4 @@ jobs:
           path: models/model.pkl
 
       - name: Run Model Inference Test Action
-        uses: lasselundstenjensen/itu-sdse-project-model-validator@main
+        uses: jakubmraz/itu-sdse-project-model-validator@main
