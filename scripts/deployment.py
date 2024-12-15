@@ -4,6 +4,7 @@ from mlflow_client import get_mlflow_client
 import mlflow
 import joblib
 import os
+from lr_wrapper import lr_wrapper
 import xgboost as xgb
 import atexit
 import sys
