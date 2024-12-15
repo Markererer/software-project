@@ -55,6 +55,7 @@ jobs:
           path: models/model.pkl
 
       - name: Run Model Inference Test Action
+        id: model-test
         uses: jakubmraz/itu-sdse-project-model-validator@main
 
       - name: Model Deployment
