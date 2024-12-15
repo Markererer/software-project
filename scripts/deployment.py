@@ -38,8 +38,6 @@ def main(args):
     client = get_mlflow_client()
     model_name = "lead_model"
 
-    print("debug")
-
     def wait_for_deployment(model_name, model_version, stage='Staging'):
         status = False
         while not status:
@@ -52,6 +50,8 @@ def main(args):
             else:
                 time.sleep(2)
         return status
+
+    print("debug")
 
     model_version_details = dict(client.get_model_version(name=model_name,version=model_version))
     if model_version_details['current_stage'] != 'Staging':
