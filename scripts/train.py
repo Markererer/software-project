@@ -97,7 +97,7 @@ def main(args):
         joblib.dump(value=model, filename=lr_model_path)
 
         # Custom python model for predicting probability
-        mlflow.sklearn.log_model('model', artifact_path="model")
+        mlflow.sklearn.log_model(model_grid.best_estimator_, artifact_path="model")
 
         lr_classification_report = classification_report(y_test, y_pred_test, output_dict=True)
 
