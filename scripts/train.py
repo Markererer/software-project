@@ -72,7 +72,7 @@ def main(args):
         lr_model_path = (os.path.join(args.artifacts_dir, "lead_model_xgboost.pkl"))
         joblib.dump(value=model, filename=lr_model_path)
 
-        #xgb_classification_report = classification_report(y_test, y_pred_test, output_dict=True)
+        xgb_classification_report = classification_report(y_test, y_pred_test, output_dict=True)
 
     with mlflow.start_run(experiment_id=experiment_id) as run:
         model = LogisticRegression()
