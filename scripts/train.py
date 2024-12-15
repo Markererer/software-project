@@ -13,7 +13,13 @@ import mlflow.pyfunc
 import warnings
 import argparse
 import pickle #🥒
-from lr_wrapper import lr_wrapper
+
+class lr_wrapper(mlflow.pyfunc.PythonModel):
+    def __init__(self, model):
+        self.model = model
+    
+    def predict(self, context, model_input):
+        return self.model.predict_proba(model_input)[:, 1]
 
 # Set up warnings and pandas options
 warnings.filterwarnings('ignore')
