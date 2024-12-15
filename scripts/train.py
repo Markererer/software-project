@@ -88,21 +88,21 @@ def main(args):
         y_pred_test = model_grid.predict(X_test)
 
         # Log LR metrics and artifacts
-        #mlflow.log_metric('f1_score', f1_score(y_test, y_pred_test))
-        #mlflow.log_artifacts("artifacts", artifact_path="model")
-        #mlflow.log_param("data_version", "00000")
+        mlflow.log_metric('f1_score', f1_score(y_test, y_pred_test))
+        mlflow.log_artifacts("artifacts", artifact_path="model")
+        mlflow.log_param("data_version", "00000")
 
         # Store model for interpretability
         lr_model_path = (os.path.join(args.artifacts_dir, "lead_model_lr.pkl"))
         joblib.dump(value=model, filename=lr_model_path)
 
         # Custom python model for predicting probability
-        #mlflow.sklearn.log_model(model_grid.best_estimator_, artifact_path="model")
+        mlflow.sklearn.log_model(model_grid.best_estimator_, artifact_path="model")
 
         lr_classification_report = classification_report(y_test, y_pred_test, output_dict=True)
 
     model_results = {
-        #"XGBoost": xgb_classification_report,
+        "XGBoost": xgb_classification_report,
         "LogisticRegression": lr_classification_report
     }
 
