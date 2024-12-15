@@ -12,9 +12,9 @@ import sys
 def save_model(model_uri, output_dir):
     loaded_model = mlflow.pyfunc.load_model(model_uri)
     # Get the flavors metadata
-    print("debug3")
     flavors = loaded_model.metadata.flavors
     print("debug4")
+    print(f"Flavors: {flavors}")
 
     # Check if the model is XGBoost
     if "xgboost" in flavors:
