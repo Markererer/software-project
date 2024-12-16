@@ -2,12 +2,10 @@ import time
 from mlflow.entities.model_registry.model_version_status import ModelVersionStatus
 import datetime
 import mlflow
-import pandas as pd
 import os
 import datetime
 import json
 import pandas as pd
-import mlflow
 import mlflow.pyfunc
 import argparse
 from mlflow_client import get_mlflow_client
@@ -74,7 +72,7 @@ def main(args):
     run_id = None
 
     if prod_model_exists:
-        data, details = mlflow.get_run(prod_model_run_id)
+        data, _ = mlflow.get_run(prod_model_run_id)
         prod_model_score = data[1]["metrics.f1_score"]
 
         model_status["current"] = train_model_score
@@ -90,7 +88,6 @@ def main(args):
     print(f"Registered model: {run_id}")
 
     # Register best model
-
     if run_id is not None:
         print(f'Best model found: {run_id}')
 

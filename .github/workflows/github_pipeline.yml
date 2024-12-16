@@ -47,3 +47,18 @@ jobs:
 
       - name: Run Dagger pipeline
         run: go run main.go
+
+      - name: Upload Model Artifact
+        uses: actions/upload-artifact@v4.4.0
+        with:
+          name: model
+          path: models/model.pkl
+
+      - name: Run Model Inference Test Action
+        id: model-test
+        uses: jakubmraz/itu-sdse-project-model-validator@main
+
+      - name: Model Deployment
+        if: success() && steps.model-test.conclusion == 'success'
+        run: |
+          echo "✅ Model inference test passed. This is where the model would be published (out of the scope of this project)."
