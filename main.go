@@ -41,8 +41,6 @@ func main() {
 	// Define Python container
 	pythonContainer := client.Container().
 		From("python:3.12-slim"). // Use Python image
-		WithExec([]string{"apt-get", "update"}).
-		WithExec([]string{"apt-get", "install", "-y", "git"}).
 		WithMountedDirectory("/app", client.Host().Directory(".")).
 		WithWorkdir("/app").
 		WithExec([]string{"pip", "install", "-r", "requirements.txt"})
