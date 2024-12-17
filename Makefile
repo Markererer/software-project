@@ -2,7 +2,7 @@
 # GLOBALS                                                                       #
 #################################################################################
 
-PROJECT_NAME = sdw_project
+PROJECT_NAME = itu-sdse-project-main
 PYTHON_VERSION = 3.10
 PYTHON_INTERPRETER = python
 
@@ -29,14 +29,14 @@ clean:
 ## Lint using flake8 and black (use `make format` to do formatting)
 .PHONY: lint
 lint:
-	flake8 sdw_project
-	isort --check --diff --profile black sdw_project
-	black --check --config pyproject.toml sdw_project
+	flake8 itu-sdse-project-main
+	isort --check --diff --profile black itu-sdse-project-main
+	black --check --config pyproject.toml itu-sdse-project-main
 
 ## Format source code with black
 .PHONY: format
 format:
-	black --config pyproject.toml sdw_project
+	black --config pyproject.toml itu-sdse-project-main
 
 
 
@@ -55,12 +55,10 @@ create_environment:
 #################################################################################
 
 
-## Make Dataset
-.PHONY: data
-data: requirements
-	$(PYTHON_INTERPRETER) sdw_project/dataset.py
-
-
+## Run the main script
+.PHONY: run
+run:
+	$(PYTHON_INTERPRETER) itu-sdse-project-main/main.go
 #################################################################################
 # Self Documenting Commands                                                     #
 #################################################################################

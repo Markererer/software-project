@@ -22,7 +22,6 @@ this is the repository of 2025 Software Development course project.
 │
 ├── models             <- Trained and serialized models, model predictions, or model summaries
 │
-│
 ├── pyproject.toml     <- Project configuration file with package metadata for 
 │                         sdw_project and configuration for tools like black
 │
@@ -56,3 +55,7 @@ this is the repository of 2025 Software Development course project.
 
 --------
 
+To run the code, paste this into the command line:
+```console
+go run main.go
+```
