@@ -56,7 +56,7 @@ func main() {
 	// Get the output from the preprocessing script
 	output, err := rawDataContainer.Stdout(ctx)
 	if err != nil {
-		log.Fatalf("Failed to run preprocessing script: %v", err)
+		log.Fatalf("Failed to run data downloading script: %v", err)
 	}
 	log.Println("Preprocessing output:", output)
 

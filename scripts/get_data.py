@@ -6,8 +6,8 @@ import argparse
 def main():
     # Repository URL and file path
     repo_url = "https://github.com/Jeppe-T-K/itu-sdse-project-data"
-    file_path = "itu-sdse-project-data/raw_data.csv"  # Path of the specific file in the repo
-    destination_path = "data/raw/raw_data.csv"  # Desired local destination
+    file_path = "./itu-sdse-project-data/raw_data.csv"  # Path of the specific file in the repo
+    destination_path = "./data/raw/raw_data.csv"  # Desired local destination
 
     # Step 1: Clone the repository (if not already cloned)
     if not os.path.exists("itu-sdse-project-data"):
