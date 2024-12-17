@@ -50,6 +50,7 @@ func main() {
 	// Download the training data from Jeppe Theiss Kristensen's GitHub repo
 	rawDataContainer := pythonContainer.WithExec([]string{
 		"python", "-u", downloadDataScriptPath,
+		"--raw_data_dir", rawDataDir,
 	})
 
 	// Get the output from the preprocessing script
