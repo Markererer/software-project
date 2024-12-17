@@ -53,12 +53,12 @@ func main() {
 		"--raw_data_dir", rawDataDir,
 	})
 
-	// Get the output from the preprocessing script
+	// Get the output from the data downloading script
 	output, err := rawDataContainer.Stdout(ctx)
 	if err != nil {
 		log.Fatalf("Failed to run data downloading script: %v", err)
 	}
-	log.Println("Preprocessing output:", output)
+	log.Println("Data download output:", output)
 
 	// Run the preprocessing script and get the updated container
 	preprocessingContainer := rawDataContainer.WithExec([]string{
