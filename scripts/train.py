@@ -69,8 +69,8 @@ def main(args):
         mlflow.xgboost.log_model(xgboost_model, artifact_path="model")
 
         # Store model for interpretability
-        lr_model_path = (os.path.join(args.artifacts_dir, "lead_model_xgboost.pkl"))
-        joblib.dump(value=model, filename=lr_model_path)
+        xg_model_path = (os.path.join(args.artifacts_dir, "lead_model_xgboost.pkl"))
+        joblib.dump(value=model, filename=xg_model_path)
 
         xgb_classification_report = classification_report(y_test, y_pred_test, output_dict=True)
 
