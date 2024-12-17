@@ -22,6 +22,7 @@ const (
 	trainingScriptPath      = "./scripts/train.py"         // Path to the model training script
 	evaluationScriptPath    = "./scripts/evaluation.py"    // Path to the model evaluation script
 	deploymentScriptPath    = "./scripts/deployment.py"    // Path to the model deployment script
+	downloadDataScriptPath  = "./scripts/get_data.py"      // Path to the script to download training data
 
 	// Script parameters
 	minDate = "2024-01-01" // Date range for the preprocessing script
@@ -44,8 +45,21 @@ func main() {
 		WithWorkdir("/app").
 		WithExec([]string{"pip", "install", "-r", "requirements.txt"})
 
+	// Download the training data from Jeppe Theiss Kristensen's GitHub repo
+	rawDataContainer := pythonContainer.WithExec([]string{
+		"python", "-u", downloadDataScriptPath,
+		"--raw_data_dir", rawDataDir,
+	})
+
+	// Get the output from the preprocessing script
+	output, err := rawDataContainer.Stdout(ctx)
+	if err != nil {
+		log.Fatalf("Failed to run preprocessing script: %v", err)
+	}
+	log.Println("Preprocessing output:", output)
+
 	// Run the preprocessing script and get the updated container
-	preprocessingContainer := pythonContainer.WithExec([]string{
+	preprocessingContainer := rawDataContainer.WithExec([]string{
 		"python", "-u", preprocessingScriptPath,
 		"--raw_data_dir", rawDataDir,
 		"--artifacts_dir", artifactsDir,
@@ -55,7 +69,7 @@ func main() {
 	})
 
 	// Get the output from the preprocessing script
-	output, err := preprocessingContainer.Stdout(ctx)
+	output, err = preprocessingContainer.Stdout(ctx)
 	if err != nil {
 		log.Fatalf("Failed to run preprocessing script: %v", err)
 	}
