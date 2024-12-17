@@ -1,4 +1,4 @@
-# sdw_project
+# ITU BDS SDSE'24 - Project by group GOMAD🥛
 
 <a target="_blank" href="https://cookiecutter-data-science.drivendata.org/">
     <img src="https://i.ytimg.com/vi/tEOTC7IDAew/maxresdefault.jpg" />
