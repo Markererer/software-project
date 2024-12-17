@@ -46,7 +46,7 @@ def main():
         else:
             raise
 
-    shutil.rmtree("itu-sdse-project-data", onerror=onerror)
+    #shutil.rmtree("itu-sdse-project-data", onerror=onerror)
 
 if __name__ == "__main__":
 #    parser = argparse.ArgumentParser(description="Data Download Script")
