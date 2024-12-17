@@ -3,7 +3,7 @@ import subprocess
 import shutil
 import argparse
 
-def main(args):
+def main():
     # Repository URL and file path
     repo_url = "https://github.com/Jeppe-T-K/itu-sdse-project-data"
     file_path = "itu-sdse-project-data/raw_data.csv"  # Path of the specific file in the repo
@@ -49,8 +49,8 @@ def main(args):
     shutil.rmtree("itu-sdse-project-data", onerror=onerror)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Data Download Script")
-    parser.add_argument("--raw_data_dir", type=str, required=True, help="Path to the raw data directory")
-
-    args = parser.parse_args()
-    main(args)
+#    parser = argparse.ArgumentParser(description="Data Download Script")
+#    parser.add_argument("--raw_data_dir", type=str, required=True, help="Path to the raw data directory")
+#
+#    args = parser.parse_args()
+    main()
